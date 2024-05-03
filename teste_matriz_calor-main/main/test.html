@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heatmap Example</title>
+    <!-- Inclua a biblioteca Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="myChart" style="width: 1000px; height: 800px;"></div>
+    <script>
+        // Dados da matriz
+        var amg8833Matrix1 = [
+            [20.5, 21.2, 22.1, 23.3, 24.0, 25.1, 26.3, 27.0],
+            [21.0, 21.8, 22.5, 23.8, 24.4, 25.5, 26.7, 27.4],
+            [21.2, 21.9, 32.7, 23.9, 24.6, 25.7, 26.8, 27.5],
+            [21.5, 22.1, 22.9, 23.8, 24.8, 25.9, 27.0, 27.8],
+            [21.8, 22.4, 23.0, 24.0, 25.0, 26.1, 27.2, 28.0],
+            [22.0, 22.6, 23.2, 30.2, 25.2, 26.3, 27.5, 28.2],
+            [22.3, 22.9, 23.5, 24.5, 25.5, 26.7, 27.8, 28.5],
+            [22.5, 23.1, 23.8, 24.8, 25.8, 26.9, 28.0, 28.7]
+        ];
+
+        // Definir os eixos x e y
+        var xLabels = ['Col 1', 'Col 2', 'Col 3', 'Col 4', 'Col 5', 'Col 6', 'Col 7', 'Col 8'];
+        var yLabels = ['Row 1', 'Row 2', 'Row 3', 'Row 4', 'Row 5', 'Row 6', 'Row 7', 'Row 8'];
+
+        // Definir os dados do heatmap
+        var data = [{
+            x: xLabels,
+            y: yLabels,
+            z: amg8833Matrix1,
+            type: 'heatmap',
+            colorscale: 'Reds'
+        }];
+
+        // Definir o layout
+        var layout = {
+            title: 'Heatmap Example',
+            xaxis: {
+                title: 'X Axis'
+            },
+            yaxis: {
+                title: 'Y Axis'
+            }
+        };
+
+        // Plotar o heatmap
+        Plotly.newPlot('myChart', data, layout);
+    </script>
+</body>
+</html>
