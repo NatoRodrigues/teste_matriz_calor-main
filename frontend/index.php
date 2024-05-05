@@ -55,7 +55,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
                 <img src="assets/images/infrared.png" alt="Logo" class="h-8 mr-2">
-                <a href="#" class="text-white font-bold text-xl font-sans">Mapa de Calor</a>
+                <a href="#" class="text-white font-bold text-xl font-sans">Detector infravermelho</a>
             </div>
             <button id="menuButton" class="text-white md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
