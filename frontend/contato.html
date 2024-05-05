@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato</title>
+    <!-- Inclua o Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Adicione o arquivo JavaScript de fade-in -->
+    <script src="JS/fade-in.js" defer></script>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="assets/images/infrared.png" alt="Logo" class="h-8 mr-2">
+                <a href="#" class="text-white font-bold text-xl font-sans">Mapa de Calor</a>
+            </div>
+            <button id="menuButton" class="text-white md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+            <ul id="menu" class="hidden md:flex space-x-4">
+                <li><a href="index.php" class="text-white font-sans">Home</a></li>
+                <li><a href="sobre.html" class="text-white font-sans">Sobre</a></li>
+                <li><a href="contato.html" class="text-white font-sans">Contato</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Banner -->
+    <div id="banner" class="hidden bg-green-200 p-4 shadow-md rounded-md mb-8 fade-in">
+        <!-- Conteúdo do banner -->
+        <h2 class="text-lg font-bold mb-2">Entre em Contato</h2>
+        <p class="text-gray-700">Entre em contato conosco para mais informações...</p>
+    </div>
+
+    <!-- Conteúdo da página -->
+    <div class="container mx-auto mt-8">
+        <h1 class="text-2xl font-bold mb-4">Contato</h1>
+        <p>Formulário de contato ou informações de contato...</p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre</title>
+    <!-- Inclua o Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Adicione o arquivo JavaScript de fade-in -->
+    <script src="JS/fade-in.js" defer></script>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+
+<body class="flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="assets/images/infrared.png" alt="Logo" class="h-8 mr-2">
+                <a href="#" class="text-white font-bold text-xl font-sans">Mapa de Calor</a>
+            </div>
+            <button id="menuButton" class="text-white md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+            <ul id="menu" class="hidden md:flex space-x-4">
+                <li><a href="index.php" class="text-white font-sans">Home</a></li>
+                <li><a href="sobre.html" class="text-white font-sans">Sobre</a></li>
+                <li><a href="contato.html" class="text-white font-sans">Contato</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Conteúdo principal -->
+    <div class="container mx-auto mt-20 flex flex-col md:flex-row justify-center items-center">
+        <!-- Banner de imagem GIF da AMG8833 -->
+        <div class="w-full md:w-1/2 mr-4">
+            <img src="assets/images/Câmera Térmica Arduino AMG8833 8x8.gif" alt="AMG8833 em funcionamento" class="w-full">
+        </div>
+        <!-- Banner "Sobre o Projeto" -->
+        <div class="w-full md:w-1/2 ml-4">
+            <div class="banner bg-green-200 p-4 shadow-md rounded-md fade-in">
+                <h2 class="text-lg font-bold mb-2">Sobre o Projeto</h2>
+                <p class="text-gray-700">O projeto utiliza a plataforma ESP32 e a IDE do Arduino para enviar solicitações GET do sensor AMG8833 para um servidor Apache PHP. O PHP é responsável por decodificar e tratar essa matriz 8x8 em JSON, enviando-a para o banco de dados. Posteriormente, os dados são recuperados pelo JavaScript, que os renderiza de forma assíncrona em um gráfico de matriz bidimensional, simulando uma câmera térmica/detector infravermelho em tempo real. Essa abordagem oferece uma visualização dinâmica e atualizada das informações capturadas pelo sensor, proporcionando uma representação visual precisa das variações de temperatura em um ambiente.</p>
+                <br>
+                <p>Para acessar mais informações acesse a documentação:</p>
+                <br>
+                👇🏽👇🏽👇🏽👇🏽👇🏽
+                
+                <br>
+                <a href="github.com">github-esp32-AMG8833</a>
+            </div>
+
+        </div>
+    </div>
+    <footer class="bg-gray-800 text-white py-4 text-center mt-auto">
+        <p>&copy; 2024 Mapa de Calor. Todos os direitos reservados.</p>
+    </footer>
+
+</body>
+
+</html>

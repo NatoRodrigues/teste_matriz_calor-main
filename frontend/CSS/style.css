@@ -1,25 +1,126 @@
-/* Estilos para a barra de navegação */
-.navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 0;
-    text-align: center;
+/* Estilo para o corpo da página */
+body {
+    font-family: sans-serif /* Definir uma fonte padrão */
+    margin: 0; /* Remover margens */
+    padding: 0; /* Remover preenchimento */
 }
 
-/* Estilos para o rodapé */
-.footer {
-    background-color: #333;
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
+/* Estilo para a barra de navegação */
+nav {
+    background-color: #333; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    padding: 10px; /* Espaçamento interno */
+    display: flex; /* Exibir como flexbox */
+    justify-content: space-between; /* Alinhar itens */
+    align-items: center; /* Alinhar itens */
 }
 
-/* Estilos para centralizar o gráfico */
+/* Estilo para o menu de navegação na barra de navegação */
+nav ul {
+    list-style: none; /* Remover marcadores de lista */
+    display: flex; /* Exibir como flexbox */
+}
+
+/* Estilo para os itens do menu de navegação */
+nav ul li {
+    margin-right: 20px; /* Margem à direita entre os itens */
+}
+
+/* Estilo para o contêiner dos gráficos */
 .chart-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 1000px; /* Defina o tamanho máximo conforme necessário */
-    margin: 0 auto; /* Centraliza horizontalmente */
-    height: 600px; /* Ajuste conforme necessário */
+    width: 100%; /* Definir largura total */
+    max-width: 100%; /* Definir largura máxima */
+    height: 300px; /* Definir altura fixa para o gráfico */
+}
+
+/* Estilo para o rodapé */
+footer {
+    background-color: #333; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    padding: 20px; /* Espaçamento interno */
+    text-align: center; /* Alinhar texto ao centro */
+}
+
+/* Media query para telas menores */
+@media screen and (max-width: 768px) {
+    /* Estilo para a barra de navegação em telas menores */
+    nav {
+        flex-direction: column; /* Mudar para layout de coluna */
+        align-items: flex-start; /* Alinhar itens à esquerda */
+    }
+
+    /* Estilo para o logotipo na barra de navegação em telas menores */
+    nav a {
+        margin-right: 0; /* Remover margem à direita */
+        margin-bottom: 10px; /* Adicionar margem inferior */
+    }
+
+    /* Estilo para o menu de navegação na barra de navegação em telas menores */
+    nav ul {
+        flex-direction: column; /* Mudar para layout de coluna */
+        align-items: flex-start; /* Alinhar itens à esquerda */
+    }
+
+    /* Estilo para os itens do menu de navegação em telas menores */
+    nav ul li {
+        margin-right: 0; /* Remover margem à direita */
+        margin-bottom: 10px; /* Adicionar margem inferior */
+    }
+
+    /* Estilo para o contêiner dos gráficos em telas menores */
+    .chart-container {
+        height: 200px; /* Ajustar altura para telas menores */
+        width: 100%; /* Largura total */
+    }
+}
+
+/* Estilos CSS para o banner */
+#banner {
+    display: none;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+nav.bg-gray-800 {
+    background-color: #333; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    padding: 10px; /* Espaçamento interno */
+    display: flex; /* Exibir como flexbox */
+    justify-content: space-between; /* Alinhar itens */
+    align-items: center; /* Alinhar itens */
+}
+
+ /* CSS para a barra de navegação */
+ #menu li {
+    display: inline;
+}
+
+#menu li a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+/* Efeito hover */
+#menu li a:hover {
+    background-color: gray; /* Cor de fundo ao passar o mouse */
+    border-radius: 5px; /* Borda arredondada */
+}
+#menu li a:hover {
+    color: #FFD700; /* Cor de texto ao passar o mouse */
 }
