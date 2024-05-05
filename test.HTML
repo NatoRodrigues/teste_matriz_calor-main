@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualização de Temperaturas</title>
+</head>
+<body>
+    <h2>Temperatura do AMG8833: <span id="temp_AMG8833"></span> °C</h2>
+    <h2>Temperatura do Termistor: <span id="temp_termistor"></span> °C</h2>
+
+    <script>
+        // Defina a função fetchTemperatures antes de ser chamada
+        function fetchTemperatures() {
+            console.log('Fazendo uma nova requisição...');
+            // Inclua os parâmetros na URL da solicitação GET
+            fetch(`backend.php?temp_AMG8833=0&temp_termistor=0`)
+                .then(response => {
+                    console.log('Resposta recebida:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    // Verifique se a resposta contém erro
+                    if (data.error) {
+                        console.error('Erro ao obter as temperaturas:', data.error);
+                        return;
+                    }
+                    // Atualize as temperaturas exibidas na página com os valores recebidos
+                    document.getElementById('temp_AMG8833').innerHTML = data.temp_AMG8833;
+                    document.getElementById('temp_termistor').innerHTML = data.temp_termistor;
+                    console.log('JSON recebido:', data);
+                })
+                .catch(error => console.error('Erro ao obter as temperaturas:', error));
+        }
+
+        // Faça a primeira chamada imediatamente
+        fetchTemperatures();
+
+        // Atualize as temperaturas a cada 8 segundos
+        setInterval(fetchTemperatures, 8000);
+    </script>
+</body>
+</html>
