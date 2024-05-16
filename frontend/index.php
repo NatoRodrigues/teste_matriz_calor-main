@@ -96,110 +96,163 @@
 
     <!-- Script para os gráficos -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var button = document.querySelector('button');
-            var menu = document.querySelector('ul');
+    document.addEventListener('DOMContentLoaded', function () {
+        var button = document.querySelector('button');
+        var menu = document.querySelector('ul');
 
-            button.addEventListener('click', function () {
-                menu.classList.toggle('hidden');
-            });
+        button.addEventListener('click', function () {
+            menu.classList.toggle('hidden');
         });
+    });
 
-        // Função para atualizar o heatmap com os dados recebidos
-        function updateHeatmap(data) {
-            // Converter os dados recebidos em uma matriz bidimensional de 8x8
-            var matrixData = [];
-            for (var i = 0; i < data.length; i += 8) {
-                matrixData.push(data.slice(i, i + 8));
+   // Função para extrair apenas os pixels dos dados recebidos
+function extractPixels(data) {
+    var pixels = [];
+    for (var key in data) {
+        if (key !== 'thermistor_temp') {
+            pixels.push(data[key]);
+        }
+    }
+    return pixels;
+}
+
+function updateHeatmap(data) {
+    // Converter os dados recebidos em uma matriz bidimensional de 8x8
+    var matrixData = [];
+    var rowCount = 8; // Número de linhas na matriz
+    var colCount = data.length / rowCount; // Número de colunas na matriz
+
+    // Iterar sobre os dados para criar a matriz bidimensional
+    for (var i = 0; i < rowCount; i++) {
+        var row = [];
+        for (var j = 0; j < colCount; j++) {
+            // Calcular o índice no array unidimensional
+            var index = i * colCount + j;
+            // Adicionar o valor correspondente à matriz
+            row.push(data[index]);
+        }
+        // Adicionar a linha à matriz bidimensional
+        matrixData.push(row);
+    }
+
+    // Log dos pixels recebidos no console
+    console.log('Pixels recebidos:', data);
+
+    // Definir o layout e plotar o heatmap
+    var layout = {
+    title: 'Mapa de Calor Infravermelho',
+    xaxis: {
+        title: 'Linhas',
+        side: 'bottom',
+        tickfont: {
+            size: 10 // Aumenta o tamanho da fonte dos rótulos do eixo x
+        }
+    },
+    yaxis: {
+        title: 'Colunas',
+        autorange: 'reversed',
+        tickfont: {
+            size: 10 // Aumenta o tamanho da fonte dos rótulos do eixo y
+        }
+    },
+    margin: {
+        t: 80, // Aumenta a margem superior
+        l: 80, // Aumenta a margem esquerda
+        r: 80, // Aumenta a margem direita
+        b: 100 // Aumenta a margem inferior
+    },
+    font: {
+        family: 'Arial, sans-serif',
+        size: 12, // Ajusta o tamanho da fonte geral
+        color: '#333'
+    }
+};
+
+    Plotly.newPlot('heatmapChart', [{
+        z: matrixData,
+        type: 'heatmap',
+        colorscale: 'Jet',
+        zsmooth: 'best',
+        zhoverformat: '.2f',
+        colorbar: {
+            title: 'Temperatura (°C)',
+            titleside: 'right',
+            ticksuffix: '°C'
+        }
+    }], layout);
+}
+var timeData = [];
+var temperatureData = [];
+
+// Função para atualizar o gráfico de variação de temperatura com os dados recebidos
+function updateTemperatureChart(thermistorTemp, timeData, temperatureData) {
+    // Adicionar o novo valor de temperatura e o tempo correspondente
+    var currentTime = new Date();
+    timeData.push(currentTime);
+    temperatureData.push(thermistorTemp);
+
+    // Manter apenas os últimos 10 minutos de dados
+    var maxTime = new Date(currentTime - 10 * 60000);
+    while (timeData.length > 0 && timeData[0] < maxTime) {
+        timeData.shift();
+        temperatureData.shift();
+    }
+
+    // Dados para o gráfico de variação de temperatura
+    var plotData = [{
+        x: timeData,
+        y: temperatureData,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Temperatura do Termistor'
+    }];
+
+    // Definir o layout do gráfico de variação de temperatura
+    var layout = {
+        title: 'Variação de Temperatura do Termistor',
+        xaxis: { title: 'Tempo' },
+        yaxis: { title: 'Temperatura (°C)' },
+        margin: { t: 60, l: 60, r: 60, b: 80 },
+        font: { family: 'Arial, sans-serif', size: 12, color: '#333' }
+    };
+
+    // Plotar o gráfico de variação de temperatura
+    Plotly.newPlot('temperatureChart', plotData, layout);
+}
+
+// Função para fazer a requisição AJAX ao servidor PHP usando Axios
+function requestDataFromServer() {
+    // Fazer a requisição GET para o backend
+    axios.get('../backend/backend.php')
+        .then(response => {
+            if (response.data.error) {
+                console.error('Erro:', response.data.error);
+            } else {
+                console.log('Dados recebidos:', response.data); // Verifique os dados recebidos no console
+
+                // Extrair apenas os pixels dos dados recebidos
+                var heatmapData = extractPixels(response.data);
+
+                // Atualizar o heatmap com os pixels extraídos
+                updateHeatmap(heatmapData);
+
+                // Obter o valor da temperatura do termistor
+                var thermistor_temp = response.data.thermistor_temp;
+
+                // Atualizar o gráfico de variação de temperatura
+                updateTemperatureChart(thermistor_temp, timeData, temperatureData);
             }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+        });
+}
 
-            // Definir o layout
-            var layout = {
-                title: 'Mapa de Calor Infravermelho',
-                xaxis: {
-                    title: 'Linhas', // Alterar o título do eixo x para 'Linhas'
-                    side: 'bottom' // Posicionar o título do eixo x na parte inferior
-                },
-                yaxis: {
-                    title: 'Colunas', // Alterar o título do eixo y para 'Colunas'
-                    autorange: 'reversed' // Inverter a direção do eixo y
-                },
-                margin: {
-                    t: 60, // Adicionar espaço superior para o título
-                    l: 60, // Adicionar espaço esquerdo
-                    r: 60, // Adicionar espaço direito
-                    b: 80 // Adicionar espaço inferior para o título do eixo x
-                },
-                font: { // Configurações de fonte
-                    family: 'Arial, sans-serif', // Usar uma fonte sans-serif
-                    size: 12, // Tamanho da fonte
-                    color: '#333' // Cor da fonte
-                }
-            };
+    // Iniciar a requisição de dados quando a página carregar
+    setInterval(requestDataFromServer, 500); // 5000 milissegundos = 5 segundos
 
-            // Plotar o heatmap com a matriz bidimensional
-            Plotly.newPlot('heatmapChart', [{
-                z: matrixData, // Usando a matriz bidimensional convertida
-                type: 'heatmap',
-                colorscale: 'Jet', // Esquema de cores semelhante ao infravermelho
-                zsmooth: 'best', // Suavizar a visualização do heatmap
-                zhoverformat: '.2f', // Formatar o valor ao passar o mouse sobre o heatmap
-                colorbar: { // Configurações da barra de cores
-                    title: 'Temperatura (°C)', // Título da barra de cores
-                    titleside: 'right', // Posição do título da barra de cores
-                    ticksuffix: '°C' // Sufixo para os valores da barra de cores
-                }
-            }], layout);
-        }
-
-        // Função para atualizar o gráfico de variação de temperatura com os dados recebidos
-        function updateTemperatureChart(data) {
-            // Dados de exemplo para o gráfico de variação de temperatura
-            var temperatureData = [
-                { x: [1, 2, 3, 4, 5], y: [20, 21, 22, 23, 24], type: 'scatter', mode: 'lines', name: 'Temperatura' }
-            ];
-
-            // Definir o layout do gráfico de variação de temperatura
-            var layout = {
-                title: 'Variação de Temperatura',
-                xaxis: { title: 'Tempo (minutos)' },
-                yaxis: { title: 'Temperatura (°C)' },
-                margin: { t: 60, l: 60, r: 60, b: 80 },
-                font: { family: 'Arial, sans-serif', size: 12, color: '#333' }
-            };
-
-            // Plotar o gráfico de variação de temperatura
-            Plotly.newPlot('temperatureChart', temperatureData, layout);
-        }
-
-        // Função para fazer a requisição AJAX ao servidor PHP usando Axios
-        var heatmapData = null;
-
-        // Função para fazer a requisição AJAX ao servidor PHP usando Axios
-        function requestDataFromServer() {
-            // Fazer a requisição GET para o backend
-            axios.get('../backend/backend.php')
-                .then(response => {
-                    if (response.data.error) {
-                        console.error('Erro:', response.data.error);
-                    } else {
-                        console.log('Dados recebidos:', response.data); // Verifique os dados recebidos no console
-                        heatmapData = response.data;
-                        updateHeatmap(heatmapData); // Atualizar o heatmap com os novos dados
-                        updateTemperatureChart(heatmapData); // Atualizar o gráfico de variação de temperatura
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                });
-        }
-
-        // Iniciar a requisição de dados quando a página carregar
-        requestDataFromServer();
-
-        // Atualizar os gráficos periodicamente
-        setInterval(requestDataFromServer, 10000); // A cada 10 segundos (10000 milissegundos)
-    </script>
+    // Atualizar os gráficos periodicamente
+</script>
 </body>
 
 </html>

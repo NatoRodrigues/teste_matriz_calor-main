@@ -5,20 +5,53 @@
 
 const char* ssid = "jrservice.net(sandra)9806-4567";  // Nome da rede Wi-Fi
 const char* password = "15022000";
-const char* endpoint = "http://10.0.0.103/teste_matriz_calor-main/backend/backend.php"; // Caminho para o script PHP no servidor
+const char* endpoint = "http://10.0.0.104/teste_matriz_calor-main/backend/backend.php"; // Caminho para o script PHP no servidor
 
 #define GRID_ROWS 8
 #define GRID_COLS 8
+#define TEMPERATURE_THRESHOLD 30 // Limiar de temperatura em °C
+#define PIXEL_THRESHOLD 8 // Limiar de pixels acima do limiar de temperatura
 
 Adafruit_AMG88xx amg;
 
 float grid[GRID_ROWS][GRID_COLS];
+unsigned long lastBuzzerTime = 0; // Variável para armazenar o momento em que o buzzer foi desativado pela última vez
+const unsigned long buzzerInterval = 1000; // Intervalo desejado entre acionamentos do buzzer (em milissegundos)
+
+#define BUZZER_FREQUENCY 200 // Frequência do buzzer em Hz
+#define BUZZER_PIN 5 // Pino do buzzer
+#define LED_R_PIN 27  // Pino do LED RGB - Vermelho
+#define LED_G_PIN 16  // Pino do LED RGB - Verde
+#define LED_B_PIN 14  // Pino do LED RGB - Azul
 
 void setup() {
   Serial.begin(115200);
   WiFi.begin(ssid, password);
+  pinMode(LED_R_PIN, OUTPUT);
+  pinMode(LED_G_PIN, OUTPUT);
+  pinMode(LED_B_PIN, OUTPUT);
+
+  // Inicializar o LEDC para controlar o PWM dos LEDs
+  ledcSetup(0, 5000, 8); // Canal 0, frequência 5 kHz, resolução de 8 bits
+  ledcAttachPin(LED_R_PIN, 0); // Anexar o canal 0 ao pino do LED vermelho
+  ledcAttachPin(LED_G_PIN, 1); // Anexar o canal 1 ao pino do LED verde
+  ledcAttachPin(LED_B_PIN, 2); // Anexar o canal 2 ao pino do LED azul
+
+  // Aqui você pode definir a cor inicial do LED RGB como branco
+  analogWrite(LED_R_PIN, 255);
+  analogWrite(LED_G_PIN, 255);
+  analogWrite(LED_B_PIN, 255);
+
   while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
+    // Aqui você pode fazer o LED RGB piscar em azul durante o processo de conexão WiFi
+    analogWrite(LED_R_PIN, 0);
+    analogWrite(LED_G_PIN, 0);
+    analogWrite(LED_B_PIN, 255);
+    delay(500);
+    analogWrite(LED_R_PIN, 255);
+    analogWrite(LED_G_PIN, 255);
+    analogWrite(LED_B_PIN, 255);
+    delay(500);
     Serial.println("Conectando ao WiFi...");
   }
   Serial.println("Conectado ao WiFi.");
@@ -29,7 +62,10 @@ void setup() {
     Serial.println("Falha ao iniciar o sensor AMG8833. Verifique as conexões.");
     while (1);
   }
+
+  pinMode(BUZZER_PIN, OUTPUT); // Configurar o pino do buzzer como saída
 }
+bool buzzerActive = false; // Variável para indicar se o buzzer está ativado
 
 void loop() {
   // Ler dados do sensor AMG8833 e preencher a matriz grid[][] com os valores
@@ -37,26 +73,58 @@ void loop() {
   amg.readPixels(pixels);
 
   // Construir uma string com os dados separados por vírgula
-  String dataString = "";
+  String pixelsString = "";
+  int highTemperaturePixels = 0; // Contador de pixels com temperatura acima do limiar
   for (int i = 0; i < GRID_ROWS; i++) {
     for (int j = 0; j < GRID_COLS; j++) {
       grid[i][j] = pixels[j + i * GRID_COLS]; // Atualizar os valores da matriz
-      Serial.print(grid[i][j]); // Imprimir o valor
-      Serial.print("\t"); // Adicionar uma tabulação para melhorar a formatação
-      dataString += String(grid[i][j]);
+      pixelsString += String(grid[i][j]);
       if (j < GRID_COLS - 1) {
-        dataString += ",";
+        pixelsString += ",";
+      }
+
+      // Verificar se o pixel está acima do limiar de temperatura
+      if (grid[i][j] > TEMPERATURE_THRESHOLD) {
+        highTemperaturePixels++;
       }
     }
-    Serial.println(); // Nova linha para a próxima linha da matriz
     if (i < GRID_ROWS - 1) {
-      dataString += "|";
+      pixelsString += "|";
     }
   }
-  Serial.println(); // Nova linha para separar os dados da matriz na saída serial
+
+  // Ler a temperatura do termistor interno do AMG8833
+  float thermistorTemp = amg.readThermistor();
+
+  // Obter o tempo atual
+  unsigned long currentTime = millis();
+
+  // Ativar o buzzer se pelo menos 8 pixels estiverem acima de 30 graus e já passou o intervalo desejado
+  if (highTemperaturePixels >= PIXEL_THRESHOLD && currentTime - lastBuzzerTime >= buzzerInterval && !buzzerActive) {
+    Serial.println("Ativando o buzzer");
+    tone(BUZZER_PIN, BUZZER_FREQUENCY);
+    digitalWrite(BUZZER_PIN, HIGH); // Ativar o buzzer
+    buzzerActive = true; // Indicar que o buzzer está ativado
+    lastBuzzerTime = currentTime; // Atualizar o tempo do último acionamento do buzzer
+    analogWrite(LED_R_PIN, 255);  // Vermelho
+    analogWrite(LED_G_PIN, 0);    // Verde
+    analogWrite(LED_B_PIN, 0);    // Azul
+  } else if (buzzerActive && currentTime - lastBuzzerTime >= buzzerInterval) {
+    Serial.println("Desativando o buzzer");
+    noTone(BUZZER_PIN); // Desativar o buzzer
+    digitalWrite(BUZZER_PIN, LOW); // Desativar o buzzer
+    buzzerActive = false; // Indicar que o buzzer está desativado
+  }
+
+  // Se não houver pixels suficientes acima de 30 graus, definir a cor do LED como verde
+  if (!buzzerActive) {
+    analogWrite(LED_R_PIN, 0);    // Vermelho
+    analogWrite(LED_G_PIN, 255);  // Verde
+    analogWrite(LED_B_PIN, 0);    // Azul
+  }
 
   // Enviar dados via GET
-  String url = String(endpoint) + "?data=" + dataString;
+  String url = String(endpoint) + "?pixels=" + pixelsString + "&thermistor_temp=" + String(thermistorTemp);
   HTTPClient http;
   http.begin(url);
   int httpResponseCode = http.GET();
@@ -69,7 +137,5 @@ void loop() {
     Serial.println("Erro na solicitação HTTP.");
   }
   http.end();
-
-  // Aguardar um intervalo de tempo antes de enviar os dados novamente
-  delay(10000); // Exemplo de intervalo de envio: 5 segundos
+  delay(100);  // Aguardar um intervalo de tempo antes de enviar os dados novamente
 }

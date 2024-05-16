@@ -2,13 +2,14 @@
 // Incluir o arquivo de conexão com o banco de dados
 include './database/config.php';
 
-// Verificar se o método da requisição é POST ou GET e se existe o parâmetro 'data'
-if (($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') && isset($_REQUEST['data'])) {
-    // Obter os dados do parâmetro 'data'
-    $data = $_REQUEST['data'];
+// Verificar se o método da requisição é POST ou GET e se existem os parâmetros 'pixels' e 'thermistor_temp'
+if (($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') && isset($_REQUEST['pixels']) && isset($_REQUEST['thermistor_temp'])) {
+    // Obter os dados dos parâmetros 'pixels' e 'thermistor_temp'
+    $pixelsData = $_REQUEST['pixels'];
+    $thermistorTemp = $_REQUEST['thermistor_temp'];
 
     // Preparar a consulta SQL de inserção
-    $sql = "INSERT INTO dados_amg8833 (temperature_pixels) VALUES ('$data')";
+    $sql = "INSERT INTO dados_amg8833 (temperature_pixels, thermistor_temp) VALUES ('$pixelsData', '$thermistorTemp')";
 
     // Executar a consulta SQL de inserção e verificar se foi bem-sucedida
     if ($conn->query($sql) === TRUE) {
@@ -17,8 +18,8 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GE
         echo json_encode(array('error' => 'Erro na inserção: ' . $conn->error));
     }
 } else {
-    // Executar a consulta SQL para selecionar o último registro da coluna 'temperature_pixels'
-    $result = $conn->query("SELECT temperature_pixels FROM dados_amg8833 ORDER BY id DESC LIMIT 1");
+    // Executar a consulta SQL para selecionar o último registro da coluna 'temperature_pixels' e 'thermistor_temp'
+    $result = $conn->query("SELECT temperature_pixels, thermistor_temp FROM dados_amg8833 ORDER BY id DESC LIMIT 1");
 
     // Verificar se a consulta foi bem-sucedida
     if ($result) {
@@ -33,6 +34,9 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GE
             $dataArray = explode(',', $row['temperature_pixels']);
             // Converter cada elemento do array em float
             $floatData = array_map('floatval', $dataArray);
+
+            // Adicionar a temperatura do termistor ao array de dados
+            $floatData['thermistor_temp'] = floatval($row['thermistor_temp']);
 
             // Codificar os dados em formato JSON
             header('Content-Type: application/json');
