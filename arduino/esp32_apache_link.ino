@@ -3,8 +3,8 @@
 #include <Wire.h>
 #include <Adafruit_AMG88xx.h>
 
-const char* ssid = "jrservice.net(sandra)9806-4567";  // Nome da rede Wi-Fi
-const char* password = "15022000";
+const char* ssid = "WIFI_NAME";  // Nome da rede Wi-Fi
+const char* password = "WIFI_PASSWORD";
 const char* endpoint = "http://10.0.0.104/teste_matriz_calor-main/backend/backend.php"; // Caminho para o script PHP no servidor
 
 #define GRID_ROWS 8
@@ -23,6 +23,8 @@ const unsigned long buzzerInterval = 1000; // Intervalo desejado entre acionamen
 #define LED_R_PIN 27  // Pino do LED RGB - Vermelho
 #define LED_G_PIN 16  // Pino do LED RGB - Verde
 #define LED_B_PIN 14  // Pino do LED RGB - Azul
+
+String authKey = ""; // Sua chave de autenticação gerada dinamicamente
 
 void setup() {
   Serial.begin(115200);
@@ -47,14 +49,17 @@ void setup() {
     analogWrite(LED_R_PIN, 0);
     analogWrite(LED_G_PIN, 0);
     analogWrite(LED_B_PIN, 255);
-    delay(500);
+    delay(100);
     analogWrite(LED_R_PIN, 255);
     analogWrite(LED_G_PIN, 255);
     analogWrite(LED_B_PIN, 255);
-    delay(500);
+    delay(100);
     Serial.println("Conectando ao WiFi...");
   }
   Serial.println("Conectado ao WiFi.");
+
+  // Gerar a chave de autenticação
+  authKey = generateAuthKey(16); // Gera uma chave de 16 caracteres
 
   // Inicializar o sensor AMG8833
   bool sensorReady = amg.begin();
@@ -66,6 +71,16 @@ void setup() {
   pinMode(BUZZER_PIN, OUTPUT); // Configurar o pino do buzzer como saída
 }
 bool buzzerActive = false; // Variável para indicar se o buzzer está ativado
+
+String generateAuthKey(int length) {
+  String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  String key = "";
+  for (int i = 0; i < length; i++) {
+    int index = random(0, chars.length());
+    key += chars.charAt(index);
+  }
+  return key;
+}
 
 void loop() {
   // Ler dados do sensor AMG8833 e preencher a matriz grid[][] com os valores
@@ -123,16 +138,22 @@ void loop() {
     analogWrite(LED_B_PIN, 0);    // Azul
   }
 
-  // Enviar dados via GET
-  String url = String(endpoint) + "?pixels=" + pixelsString + "&thermistor_temp=" + String(thermistorTemp);
+  // Enviar dados via POST
+  String postData = "pixels=" + pixelsString + "&thermistor_temp=" + String(thermistorTemp);
   HTTPClient http;
-  http.begin(url);
-  int httpResponseCode = http.GET();
+  http.begin(endpoint);
+  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  http.addHeader("Authorization", "Bearer " + authKey); // Adicionar o header de autenticação
+  int httpResponseCode = http.POST(postData);
   
   if (httpResponseCode > 0) {
     String response = http.getString();
     Serial.println(httpResponseCode);
     Serial.println(response);
+    // Verificar se a resposta contém erro de autenticação
+    if (response.indexOf("error") >= 0) {
+      Serial.println("Erro na autenticação. Verifique a chave de autenticação.");
+    }
   } else {
     Serial.println("Erro na solicitação HTTP.");
   }

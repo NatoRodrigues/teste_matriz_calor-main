@@ -1,5 +1,0 @@
-RewriteEngine On
-
-# Redireciona todas as requisições para frontend/index.html exceto as que forem para backend/backend.php
-RewriteCond %{REQUEST_URI} !^/backend/backend.php$
-RewriteRule ^ index.html [L]
