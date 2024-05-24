@@ -3,9 +3,9 @@
 #include <Wire.h>
 #include <Adafruit_AMG88xx.h>
 
-const char* ssid = "jrservice.net(sandra)9806-4567";  // Nome da rede Wi-Fi
-const char* password = "15022000";
-const char* endpoint = "http://10.0.0.104/teste_matriz_calor-main/backend/backend.php"; // Caminho para o script PHP no servidor
+const char* ssid = "wifi_name";  // Nome da rede Wi-Fi
+const char* password = "wifi_password";
+const char* endpoint = "server_endpoint"; // Caminho para o servidor
 
 #define GRID_ROWS 8
 #define GRID_COLS 8
