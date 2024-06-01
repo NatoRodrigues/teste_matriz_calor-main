@@ -1,0 +1,6 @@
+
+    {
+        "name": "yourname/yourproject",
+        "description": "A PHP project",
+        "require": {}
+    }
