@@ -1,6 +1,6 @@
 <?php
 // Incluir o arquivo de conexão com o banco de dados
-include './database/config.php';
+include 'database/config.php';
 
 // Função para enviar resposta JSON
 function sendJsonResponse($response) {
