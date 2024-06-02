@@ -223,7 +223,7 @@ function updateTemperatureChart(thermistorTemp, timeData, temperatureData) {
 // Função para fazer a requisição AJAX ao servidor PHP usando Axios
 function requestDataFromServer() {
     // Fazer a requisição GET para o backend
-    axios.get('../backend/backend.php')
+    axios.get('https://matriz-calor.free.nf/backend/backend.php')
         .then(response => {
             if (response.data.error) {
                 console.error('Erro:', response.data.error);
