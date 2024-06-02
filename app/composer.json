@@ -1,6 +1,5 @@
 
     {
         "name": "matriz-calor/matriz-calo",
-        "description": "A PHP project",
-        "require": {}
+        "version": "1.0.0"
     }
