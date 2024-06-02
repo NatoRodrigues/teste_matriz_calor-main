@@ -1,4 +1,0 @@
-<Directory "/app/backend">
-    AllowOverride All
-    Require all granted
-</Directory>
