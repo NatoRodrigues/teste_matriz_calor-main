@@ -1,9 +1,9 @@
 RewriteEngine On
 
-# Roteia todas as requisições para a pasta backend
-RewriteRule ^backend/(.*)$ backend/$1 [L]
+# Roteia todas as requisições para o backend.php para a pasta backend
+RewriteRule ^backend/(.*)$ backend/backend.php [L]
 
-# Roteia todas as outras requisições para o frontend/index.php
+# Roteia todas as outras requisições para a pasta frontend
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ frontend/index.php [L]
+RewriteRule ^(.*)$ frontend/$1 [L]
