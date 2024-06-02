@@ -223,7 +223,7 @@ function updateTemperatureChart(thermistorTemp, timeData, temperatureData) {
 // Função para fazer a requisição AJAX ao servidor PHP usando Axios
 function requestDataFromServer() {
     // Fazer a requisição GET para o backend
-    axios.get('http://localhost/teste_matriz_calor-main/app/backend/backend.php')
+    axios.get('http://3.149.230.245/teste_matriz_calor-main/app/backend/backend.php') // endereço do servidor na vm amazon
         .then(response => {
             if (response.data.error) {
                 console.error('Erro:', response.data.error);
