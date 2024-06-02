@@ -22,3 +22,4 @@ $conn->set_charset("utf8");
 
 // Se a conexão for bem-sucedida, você pode prosseguir com suas operações
 ?>
+C:\Users\renat\workspace\backend_matriz_calor\backend_matriz_calor\app\backend\database\config.php
